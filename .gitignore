@@ -1,0 +1,76 @@
+### Go ###
+# Бинарные файлы и исполняемые файлы
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Кэш и временные файлы Go
+/.go/
+/pkg/
+/vendor/
+
+# Тестовые данные и кэш тестов
+/testdata/
+/coverage.txt
+profile.out
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+### IDE & редакторы ###
+.idea/
+.vscode/
+*.swp
+*.swo
+*.iml
+*.ipr
+*.iws
+*.code-workspace
+
+### Системные и временные файлы ###
+*.log
+*.tmp
+*.temp
+*.bak
+*.pid
+*.pid.lock
+
+### Файлы окружения ###
+.env
+.env.local
+.env*.local
+.secrets
+*.secret
+
+### Депенденси-менеджеры (если используются) ###
+Gopkg.lock
+Gopkg.toml
+glide.lock
+glide.yaml
+
+### Дополнительные артефакты сборки ###
+/dist/
+/build/
+*.o
+*.a
+*.lib
+*.zip
+*.tar.gz
+
+### Документация и автосгенерированные файлы ###
+*.dox
+*.pdf
+*.doc
+*.docx
+/api/
+/docs/

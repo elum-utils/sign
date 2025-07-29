@@ -33,6 +33,11 @@ type TMAUser struct {
 }
 
 func Validate(params, secret string) (*TMAUser, bool) {
+
+	if secret == "" {
+		return nil, false
+	}
+
 	if hashSecret == nil {
 		h := hmac.New(sha256.New, []byte("WebAppData"))
 		h.Write([]byte(secret))
@@ -107,6 +112,8 @@ func Validate(params, secret string) (*TMAUser, bool) {
 	if err != nil || !hmac.Equal(computedHash, decodedHash) {
 		return &TMAUser{}, false
 	}
+
+	
 
 	return &TMAUser{}, true
 
