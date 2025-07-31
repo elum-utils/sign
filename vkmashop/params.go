@@ -10,6 +10,7 @@ const (
 	Chargeable Status = "chargeable"
 	Canceled   Status = "canceled"
 	Refunded   Status = "refunded"
+	Active     Status = "active"
 )
 
 type NotificationType string
