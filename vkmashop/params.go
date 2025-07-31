@@ -16,10 +16,13 @@ const (
 type NotificationType string
 
 const (
-	GetItem                  NotificationType = "get_item"
-	OrderStatusChange        NotificationType = "order_status_change"
-	GetSubscription          NotificationType = "get_subscription"
-	SubscriptionStatusChange NotificationType = "subscription_status_change"
+	GetItem                      NotificationType = "get_item"
+	GetItemTest                  NotificationType = "get_item_test"
+	OrderStatusChange            NotificationType = "order_status_change"
+	OrderStatusChangeTest        NotificationType = "order_status_change_test"
+	GetSubscription              NotificationType = "get_subscription"
+	SubscriptionStatusChange     NotificationType = "subscription_status_change"
+	SubscriptionStatusChangeTest NotificationType = "subscription_status_change_test"
 )
 
 type CancelReason string
