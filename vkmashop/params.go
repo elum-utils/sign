@@ -4,10 +4,36 @@ import (
 	"strconv"
 )
 
+type Status string
+
+const (
+	Chargeable Status = "chargeable"
+	Canceled   Status = "canceled"
+	Refunded   Status = "refunded"
+)
+
+type NotificationType string
+
+const (
+	GetItem                  NotificationType = "get_item"
+	OrderStatusChange        NotificationType = "order_status_change"
+	GetSubscription          NotificationType = "get_subscription"
+	SubscriptionStatusChange NotificationType = "subscription_status_change"
+)
+
+type CancelReason string
+
+const (
+	CancelUserDecision CancelReason = "user_decision"
+	CancelAppDecision  CancelReason = "app_decision"
+	CancelPaymentFail  CancelReason = "payment_fail"
+	CancelUnknown      CancelReason = "unknown"
+)
+
 // Params represents the payment notification parameters sent by VK's payment system.
 // These parameters are received via HTTP POST when a payment event occurs in your VK Mini App.
 //
-// VK Payments API Documentation: 
+// VK Payments API Documentation:
 // - Overview: https://dev.vk.com/api/payments/getting-started
 // - Notifications: https://dev.vk.com/api/payments/notifications/overview
 //
@@ -15,69 +41,69 @@ import (
 // to prevent forgery. Always verify the signature before processing notifications.
 type Params struct {
 	// Language code for localization (e.g., "ru", "en")
-	Lang             string
-	
+	Lang string
+
 	// Unique identifier of the VK application that initiated the payment
-	AppID            int
-	
+	AppID int
+
 	// VK user ID who performed the payment action
-	UserID           int
-	
+	UserID int
+
 	// Unix timestamp when the payment event occurred
-	Date             int
-	
+	Date int
+
 	// [Deprecated] Product name - use ItemTitle instead for new implementations
-	Item             string
-	
+	Item string
+
 	// Discount percentage applied to the item (0-100)
-	ItemDiscount     int
-	
+	ItemDiscount int
+
 	// Merchant's unique product identifier (SKU)
-	ItemID           string
-	
+	ItemID string
+
 	// URL of the product image displayed during checkout
-	ItemPhotoURL     string
-	
+	ItemPhotoURL string
+
 	// Product price in minor currency units (e.g., cents, kopecks)
-	ItemPrice        int
-	
+	ItemPrice int
+
 	// Localized product title displayed to user
-	ItemTitle        string
-	
+	ItemTitle string
+
 	// Type of payment notification:
 	// - "get_item": Product information request
 	// - "order_status_change": Payment status update
 	// - "get_subscription": Subscription information request
 	// - "subscription_status_change": Subscription status update
-	NotificationType string
-	
+	NotificationType NotificationType
+
 	// Current payment status:
 	// - "chargeable": Ready to be processed
 	// - "canceled": Payment failed
 	// - "refunded": Payment was returned
-	Status           string
-	
+	Status Status
+
 	// Reason for cancellation when status="canceled":
 	// - "user_decision": User canceled
 	// - "app_decision": App canceled via API
 	// - "payment_fail": Payment failed
 	// - "unknown": Other reason
-	CancelReason     string
-	
+	CancelReason CancelReason
+
 	// Unique identifier for recurring subscriptions
-	SubscriptionID   int
-	
+	SubscriptionID int
+
 	// Unique transaction ID for this payment in VK's system
-	OrderID          int
-	
+	OrderID int
+
 	// Merchant account ID receiving the funds
-	ReceiverID       int
-	
+	ReceiverID int
+
 	// VK API version used (e.g., "5.131")
-	Version          string
-	
+	Version string
+
 	// MD5 signature for request validation (concatenated params + secret key)
-	Sig              string
+	Sig string
 }
 
 // set assigns a value to the appropriate struct field based on the parameter name.
@@ -87,7 +113,7 @@ type Params struct {
 //   - key: The parameter name from VK (e.g., "app_id", "user_id")
 //   - value: The raw string value from the request
 //
-// Note: 
+// Note:
 // - Numeric values are automatically converted from string
 // - Unknown parameters are silently ignored
 // - Conversion errors result in zero values
@@ -114,11 +140,11 @@ func (b *Params) set(key, value string) {
 	case "item_title":
 		b.ItemTitle = value
 	case "notification_type":
-		b.NotificationType = value
+		b.NotificationType = NotificationType(value)
 	case "status":
-		b.Status = value
+		b.Status = Status(value)
 	case "cancel_reason":
-		b.CancelReason = value
+		b.CancelReason = CancelReason(value)
 	case "subscription_id":
 		b.SubscriptionID = atoi(value)
 	case "order_id":
