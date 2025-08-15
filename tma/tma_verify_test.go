@@ -16,6 +16,42 @@ func TestValidate(t *testing.T) {
 		wantValid     bool
 	}{
 		{
+			name:          "Missing secrets",
+			params:        "http://[%10::1]",
+			clientSecrets: "",
+			wantValid:     false,
+		},
+		{
+			name:          "Invalid params",
+			params:        "http://[%10::1]",
+			clientSecrets: secrets,
+			wantValid:     false,
+		},
+		{
+			name:          "No signature",
+			params:        "https://example.com",
+			clientSecrets: secrets,
+			wantValid:     false,
+		},
+		{
+			name:          "Empty signature",
+			params:        "https://example.com?sign=abc",
+			clientSecrets: secrets,
+			wantValid:     false,
+		},
+		{
+			name:          "No signature param",
+			params:        "https://example.com?q=abc",
+			clientSecrets: secrets,
+			wantValid:     false,
+		},
+		{
+			name:          "Malformed query",
+			params:        "https://example.com?sign=abc&%gh&%ij",
+			clientSecrets: secrets,
+			wantValid:     false,
+		},
+		{
 			name:          "Valid params",
 			params:        `user=%7B%22id%22%3A1093776793%2C%22first_name%22%3A%22%D0%90%D1%80%D1%82%D1%83%D1%80%22%2C%22last_name%22%3A%22%D0%A4%D1%80%D0%B0%D0%BD%D0%BA%22%2C%22username%22%3A%22gmelum%22%2C%22language_code%22%3A%22ru%22%2C%22is_premium%22%3Atrue%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=3411281046910109270&chat_type=private&auth_date=1710181745&hash=ef19060b40a2277fa4debd9c6ad9b37b1e7ac1b6f467e53c66ca6d8df2c3c168`,
 			clientSecrets: secrets,
@@ -49,7 +85,7 @@ func TestValidate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p, isValid := Validate(tt.params, tt.clientSecrets)
+			p, isValid := Verify(tt.params, tt.clientSecrets)
 			if isValid != tt.wantValid {
 				t.Errorf("Validate() validity = %v, want %v", isValid, tt.wantValid)
 			}
@@ -74,6 +110,36 @@ func BenchmarkValidate(b *testing.B) {
 		parallel bool
 	}{
 		{
+			name:    "Missing secrets",
+			params:  "http://[%10::1]",
+			secrets: "",
+		},
+		{
+			name:    "Invalid params",
+			params:  "http://[%10::1]",
+			secrets: secrets,
+		},
+		{
+			name:    "No signature",
+			params:  "https://example.com",
+			secrets: secrets,
+		},
+		{
+			name:    "Empty signature",
+			params:  "https://example.com?sign=abc",
+			secrets: secrets,
+		},
+		{
+			name:    "No signature param",
+			params:  "https://example.com?q=abc",
+			secrets: secrets,
+		},
+		{
+			name:    "Malformed query",
+			params:  "https://example.com?sign=abc&%gh&%ij",
+			secrets: secrets,
+		},
+		{
 			name:    "Valid params",
 			params:  validParams,
 			secrets: secrets,
@@ -82,11 +148,6 @@ func BenchmarkValidate(b *testing.B) {
 			name:    "Invalid params",
 			params:  invalidParams,
 			secrets: secrets,
-		},
-		{
-			name:    "Missing secrets",
-			params:  validParams,
-			secrets: "",
 		},
 		{
 			name:     "Valid params (parallel)",
@@ -101,12 +162,12 @@ func BenchmarkValidate(b *testing.B) {
 			if bm.parallel {
 				b.RunParallel(func(pb *testing.PB) {
 					for pb.Next() {
-						_, _ = Validate(bm.params, bm.secrets)
+						_, _ = Verify(bm.params, bm.secrets)
 					}
 				})
 			} else {
 				for i := 0; i < b.N; i++ {
-					_, _ = Validate(bm.params, bm.secrets)
+					_, _ = Verify(bm.params, bm.secrets)
 				}
 			}
 		})

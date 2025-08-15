@@ -43,22 +43,24 @@ if !ok {
 
 ### 📉 Benchmark Comparison (`Apple M4`, `goarch: arm64`)
 
-| Test                               | `elum-utils/sign` | `vksdk/vkapps`       | Improvement      |
-|------------------------------------|-------------------|----------------------|------------------|
-| Missing secrets                    | **1.39 ns/op**    | 323.7 ns/op          | 🟢 ~233x faster   |
-| Invalid URL                        | **113.4 ns/op**   | 314.6 ns/op          | 🟢 ~2.8x faster   |
-| No signature                       | **87.12 ns/op**   | 85.96 ns/op          | ➖ comparable     |
-| Empty signature                    | **105.8 ns/op**   | 511.2 ns/op          | 🟢 ~4.8x faster   |
-| No signature param                 | **107.7 ns/op**   | 126.8 ns/op          | 🟢 ~1.2x faster   |
-| Malformed query                    | **150.1 ns/op**   | 279.3 ns/op          | 🟢 ~1.9x faster   |
-| Valid with special chars           | **1100 ns/op**    | 2362 ns/op           | 🟢 ~2.15x faster  |
-| Invalid signature                  | **1004 ns/op**    | 1993 ns/op           | 🟢 ~2x faster     |
-| Valid signature                    | **1034 ns/op**    | 2401 ns/op           | 🟢 ~2.3x faster   |
-| Valid signature (parallel)         | **468.9 ns/op**   | 1107 ns/op           | 🟢 ~2.36x faster  |
+| Test                       | `elum-utils/sign` | `vksdk/vkapps` | Improvement       |
+|----------------------------|-------------------|----------------|-------------------|
+| Missing secrets            | **1.554 ns/op**   | 323.7 ns/op    | 🟢 ~208x faster   |
+| Invalid URL                | **19.63 ns/op**   | 314.6 ns/op    | 🟢 ~16x faster    |
+| No signature               | **18.96 ns/op**   | 85.96 ns/op    | 🟢 ~4.5x faster   |
+| Empty signature            | **34.66 ns/op**   | 511.2 ns/op    | 🟢 ~14.7x faster  |
+| No signature param         | **34.57 ns/op**   | 126.8 ns/op    | 🟢 ~3.7x faster   |
+| Malformed query            | **49.64 ns/op**   | 279.3 ns/op    | 🟢 ~5.6x faster   |
+| Valid with special chars   | **637.8 ns/op**   | 2362 ns/op     | 🟢 ~3.7x faster   |
+| Invalid signature          | **583.5 ns/op**   | 1993 ns/op     | 🟢 ~3.4x faster   |
+| Valid signature            | **645.7 ns/op**   | 2401 ns/op     | 🟢 ~3.7x faster   |
+| Valid signature (parallel) | **141.9 ns/op**   | 1107 ns/op     | 🟢 ~7.8x faster   |
 
-### 🧠 Memory Efficiency
-- **50-80% fewer bytes allocated** in most cases  
-- **70-80% fewer allocations** for signature validation  
+**Key improvements:**
+- All operations show significantly better performance
+- 0 memory allocations for most test cases
+- Only 1 alloc/op for signature operations
+- Parallel processing shows ~5.4x speedup
 
 ---
 

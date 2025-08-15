@@ -1,7 +1,6 @@
 package vkmashop
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -75,19 +74,8 @@ func BenchmarkVerify(b *testing.B) {
 		"52333469": "5STCdDl55VezBzYt0AUA",
 	}
 
-	rawQuery := strings.Join([]string{
-		"app_id=52333469",
-		"item=Subscribtion_Item_NoAd30",
-		"lang=ru_RU",
-		"notification_type=get_item_test",
-		"order_id=2256399",
-		"receiver_id=262959639",
-		"user_id=262959639",
-		"sig=871447748e3803be83acb30dec37b5e5",
-	}, "&")
-
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = Verify(rawQuery, secrets)
+		_, _ = Verify("app_id=52333469&item=Subscribtion_Item_NoAd30&lang=ru_RU&notification_type=get_item_test&order_id=2256399&receiver_id=262959639&user_id=262959639&sig=871447748e3803be83acb30dec37b5e5", secrets)
 	}
 }
