@@ -39,9 +39,9 @@ func TestParams_set(t *testing.T) {
 		{
 			name:  "auth_date sets valid time",
 			key:   "auth_date",
-			value: "2301011200",
+			value: "1672531200", // Unix timestamp for Jan 1, 2023 00:00:00 UTC
 			expected: func(p *Params) bool {
-				expectedTime, _ := time.Parse("0601021504", "2301011200")
+				expectedTime := time.Unix(1672531200, 0)
 				return p.AuthDate.Equal(expectedTime)
 			},
 		},
@@ -58,9 +58,9 @@ func TestParams_set(t *testing.T) {
 			key:   "unknown",
 			value: "value",
 			expected: func(p *Params) bool {
-				return p.UserData == "" && 
-					p.ChatInstance == "" && 
-					p.ChatType == "" && 
+				return p.UserData == "" &&
+					p.ChatInstance == "" &&
+					p.ChatType == "" &&
 					p.AuthDate.IsZero()
 			},
 		},
@@ -88,11 +88,11 @@ func TestParams_User(t *testing.T) {
 			name:     "valid user data",
 			userData: `{"id":123,"first_name":"John","last_name":"Doe","username":"johndoe"}`,
 			expected: func(u *User, err error) bool {
-				return u != nil && 
-					u.ID == 123 && 
-					u.FirstName == "John" && 
-					u.LastName == "Doe" && 
-					u.UserName == "johndoe" && 
+				return u != nil &&
+					u.ID == 123 &&
+					u.FirstName == "John" &&
+					u.LastName == "Doe" &&
+					u.UserName == "johndoe" &&
 					err == nil
 			},
 		},
@@ -126,10 +126,10 @@ func TestParams_User(t *testing.T) {
 
 func BenchmarkParams_set(b *testing.B) {
 	inputs := map[string]string{
-		"user":           `{"id":123,"first_name":"John"}`,
-		"chat_instance":  "abc123",
-		"chat_type":      "private",
-		"auth_date":      "2301011200",
+		"user":          `{"id":123,"first_name":"John"}`,
+		"chat_instance": "abc123",
+		"chat_type":     "private",
+		"auth_date":     "2301011200",
 	}
 
 	b.ResetTimer()
