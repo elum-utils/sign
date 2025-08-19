@@ -26,11 +26,11 @@ var b64NoPad = base64.URLEncoding.WithPadding(base64.NoPadding)
 //   - bool: true if signature is valid, false otherwise
 //
 // The verification process:
-//   1. Parses and validates required parameters (vk_app_id and sign)
-//   2. Selects the appropriate secret based on vk_app_id
-//   3. Constructs the canonical parameter string
-//   4. Computes HMAC-SHA256 signature
-//   5. Compares with provided signature
+//  1. Parses and validates required parameters (vk_app_id and sign)
+//  2. Selects the appropriate secret based on vk_app_id
+//  3. Constructs the canonical parameter string
+//  4. Computes HMAC-SHA256 signature
+//  5. Compares with provided signature
 func Verify(rawQuery string, secrets map[string]string) (*Params, bool) {
 	// Early return if no secrets provided
 	if len(secrets) == 0 {
@@ -52,6 +52,12 @@ func Verify(rawQuery string, secrets map[string]string) (*Params, bool) {
 
 	// Parse query string parameters
 	for start := 0; start < len(rawQuery); {
+
+		if start == 0 && rawQuery[start] == '?' {
+			start = 1
+			continue
+		}
+
 		// Find parameter boundary
 		end := strings.IndexByte(rawQuery[start:], '&')
 		if end == -1 {
@@ -70,9 +76,11 @@ func Verify(rawQuery string, secrets map[string]string) (*Params, bool) {
 			continue // Skip malformed parameters without values
 		}
 
+
+		v := rawQuery[eq+1:end]
 		// Unescape both key and value
 		key, ok1 := utils.QueryUnescape(rawQuery[start:eq], &tmpBuf)
-		val, ok2 := utils.QueryUnescape(rawQuery[eq+1:end], &tmpBuf)
+		val, ok2 := utils.QueryUnescape(v, &tmpBuf)
 		if !ok1 || !ok2 {
 			return nil, false // Skip if unescaping fails
 		}
@@ -119,7 +127,7 @@ func Verify(rawQuery string, secrets map[string]string) (*Params, bool) {
 		buf = utils.AppendEscape(buf, p.Key)
 		buf = append(buf, '=')
 		buf = utils.AppendEscape(buf, p.Val)
-		
+
 		// Store parameter while building canonical string
 		params.set(p.Key, p.Val)
 	}
@@ -140,7 +148,7 @@ func Verify(rawQuery string, secrets map[string]string) (*Params, bool) {
 	expectedSign := *b64Ptr
 	expectedSign = expectedSign[:43] // Base64 URL encoded SHA-256 length
 	b64NoPad.Encode(expectedSign, sum)
-	
+
 	// Return resources to pools
 	utils.Base64BufPool.Put(b64Ptr)
 	utils.Sha256SumBufPool.Put(sumPtr)

@@ -11,6 +11,11 @@ import (
 // Uses an external buffer to avoid extra allocations.
 // Returns false if the input contains invalid percent-encoding.
 func QueryUnescape(s string, dstBuf *[]byte) (string, bool) {
+
+	if len(s) == 0 {
+		return "", true
+	}
+
 	// Быстрая проверка — ничего не кодируем
 	needsDecode := false
 	for i := 0; i < len(s); i++ {
@@ -46,6 +51,7 @@ func QueryUnescape(s string, dstBuf *[]byte) (string, bool) {
 		}
 	}
 	*dstBuf = b
+
 	return unsafe.String(&b[0], len(b)), true
 }
 

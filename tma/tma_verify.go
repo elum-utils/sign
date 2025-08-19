@@ -27,11 +27,11 @@ var hashSecret []byte
 //   - bool: Verification result (true if valid)
 //
 // The function performs several security checks:
-//   1. Validates input parameters aren't empty
-//   2. Parses and sorts query parameters
-//   3. Computes HMAC-SHA256 signature
-//   4. Compares with provided signature
-//   5. Returns parsed parameters only if verification succeeds
+//  1. Validates input parameters aren't empty
+//  2. Parses and sorts query parameters
+//  3. Computes HMAC-SHA256 signature
+//  4. Compares with provided signature
+//  5. Returns parsed parameters only if verification succeeds
 func Verify(rawQuery, secret string) (*Params, bool) {
 	// Early return for empty inputs
 	if secret == "" || rawQuery == "" {
@@ -60,6 +60,12 @@ func Verify(rawQuery, secret string) (*Params, bool) {
 
 	// Parse query string
 	for start := 0; start < len(rawQuery); {
+
+		if start == 0 && rawQuery[start] == '?' {
+			start = 1
+			continue
+		}
+
 		// Find next parameter boundary
 		end := strings.IndexByte(rawQuery[start:], '&')
 		if end == -1 {
@@ -113,7 +119,7 @@ func Verify(rawQuery, secret string) (*Params, bool) {
 		buf = append(buf, p.Key...)
 		buf = append(buf, '=')
 		buf = append(buf, p.Val...)
-		
+
 		// Store parameter while building canonical string
 		params.set(p.Key, p.Val)
 	}
