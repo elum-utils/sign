@@ -22,7 +22,7 @@ var (
 
 	Base64BufPool = sync.Pool{
 		New: func() any {
-			b := make([]byte, 43) // SHA-256 в base64 без паддинга
+			b := make([]byte, 43)
 			return &b
 		},
 	}

@@ -1,6 +1,6 @@
 module github.com/elum-utils/sign
 
-go 1.21
+go 1.20
 
 require github.com/json-iterator/go v1.1.12
 

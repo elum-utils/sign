@@ -15,7 +15,6 @@ func (s KVSlice) InsertionSort() {
 		key := s[i]
 		j := i - 1
 
-		// Сдвигаем элементы большие чем key
 		for j >= 0 && s[j].Key > key.Key {
 			s[j+1] = s[j]
 			j--

@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"strings"
 	"unsafe"
 )
 
@@ -16,7 +15,6 @@ func QueryUnescape(s string, dstBuf *[]byte) (string, bool) {
 		return "", true
 	}
 
-	// Быстрая проверка — ничего не кодируем
 	needsDecode := false
 	for i := 0; i < len(s); i++ {
 		if s[i] == '%' || s[i] == '+' {
@@ -53,35 +51,4 @@ func QueryUnescape(s string, dstBuf *[]byte) (string, bool) {
 	*dstBuf = b
 
 	return unsafe.String(&b[0], len(b)), true
-}
-
-func QueryUnescapeBytes(s string, buf *[]byte) ([]byte, bool) {
-	if strings.IndexByte(s, '%') == -1 && strings.IndexByte(s, '+') == -1 {
-		return unsafeStringToBytes(s), true
-	}
-
-	b := (*buf)[:0]
-	for i := 0; i < len(s); {
-		switch s[i] {
-		case '%':
-			if i+2 >= len(s) {
-				return nil, false
-			}
-			hi := FromHex(s[i+1])
-			lo := FromHex(s[i+2])
-			if hi == 255 || lo == 255 {
-				return nil, false
-			}
-			b = append(b, hi<<4|lo)
-			i += 3
-		case '+':
-			b = append(b, ' ')
-			i++
-		default:
-			b = append(b, s[i])
-			i++
-		}
-	}
-	*buf = b
-	return b, true
 }
